@@ -1,0 +1,16 @@
+# Default values for suricata.
+replicaCount: 1
+
+image:
+  repository: registry.hub.docker.com/jasonish/suricata
+  pullPolicy: IfNotPresent
+  tag: 6.0.2
+
+interface: eth0
+
+# Host path for suricata log volume
+suricata_log_path: /data/suricata
+
+# Specify the node label for determining where to run Suricata
+node_label: "kubernetes.io/hostname"
+node_label_value: "k3d-suricata-test-server-0"

@@ -1,0 +1,28 @@
+kind: ZarfPackageConfig
+metadata:
+  name: suricata
+  description: "Deploys suricata IDS in basic configuration"
+constants:
+  - name: REPOSITORY
+    value: "###ZARF_PKG_VAR_REPOSITORY###"
+  - name: TAG
+    value: "###ZARF_PKG_VAR_TAG###"
+  - name: INTERFACE
+    value: "###ZARF_PKG_VAR_INTERFACE###"
+  - name: SURICATA_LOG_PATH
+    value: "###ZARF_PKG_VAR_SURICATA_LOG_PATH###"
+  - name: NODE_LABEL
+    value: "###ZARF_PKG_VAR_NODE_LABEL###"
+  - name: NODE_LABEL_VALUE
+    value: "###ZARF_PKG_VAR_NODE_LABEL_VALUE###"
+components:
+  - name: suricata
+    charts:
+      - name: suricata
+        localPath: suricata-charts
+        namespace: "suricata"
+        version: 0.1.0
+        valuesFiles:
+          - manifests/suricata-values.yaml
+    images:
+      - "###ZARF_PKG_VAR_REPOSITORY###:###ZARF_PKG_VAR_TAG###"

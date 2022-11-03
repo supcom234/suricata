@@ -1,0 +1,57 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    component: suricata
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      component: suricata
+  template:
+    metadata:
+      labels:
+        component: suricata
+    spec:
+      hostNetwork: true
+      containers:
+      - name: suricata
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        securityContext:
+          capabilities: # Required to allow Suricata to function
+            add:
+              - NET_ADMIN
+              - NET_RAW
+              - SYS_NICE
+        volumeMounts:
+        - name: logs
+          mountPath: /var/log/suricata
+        args: ["-i", "{{ .Values.interface }}"]
+      volumes:
+      - name: logs
+        hostPath:
+          path: {{ .Values.suricata_log_path }}
+          type: DirectoryOrCreate
+      affinity:
+        podAntiAffinity: # Do not allow more than one per host
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: component
+                operator: In
+                values:
+                - suricata
+            topologyKey: "kubernetes.io/hostname"
+        nodeAffinity: # Specify a specific target node
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: {{ .Values.node_label }}
+                operator: In
+                values:
+                  - {{ .Values.node_label_value }}
+...
