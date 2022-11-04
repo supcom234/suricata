@@ -12,5 +12,5 @@ interface: eth0
 suricata_log_path: /data/suricata
 
 # Specify the node label for determining where to run Suricata
-node_label: "kubernetes.io/hostname"
-node_label_value: "k3d-suricata-test-server-0"
+node_label: "kubernetes.io/os"
+node_label_value: "linux"
