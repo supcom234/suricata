@@ -37,7 +37,9 @@ spec:
         args: ["-i", "{{ .Values.interface }}"]
       volumes:
       - name: logs
-        emptyDir: {}
+        hostPath:
+          path: {{ .Values.suricata_log_path }}
+          type: DirectoryOrCreate
       affinity:
         podAntiAffinity: # Do not allow more than one per host
           requiredDuringSchedulingIgnoredDuringExecution:
