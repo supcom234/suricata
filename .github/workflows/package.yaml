@@ -14,11 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/install-zarf
-      - uses: ./.github/actions/registry-login
-        with:
-          registry_username: ${{secrets.REGISTRY1_USERNAME}}
-          registry_password: ${{secrets.REGISTRY1_PASSWORD}}
-          registry_url: registry1.dso.mil
       - uses: ./.github/actions/package-create
       - uses: unfor19/install-aws-cli-action@v1.0.3
         with:
@@ -36,5 +31,5 @@ jobs:
       - uses: ./.github/actions/s3-publish
         with:
           aws_bucket: ${{secrets.AWS_BUCKET}}
-          source: "zarf-package-dco-foundation-amd64.tar.zst"
-          destination: "${{github.repository}}/${{ github.head_ref || github.ref_name }}/zarf-package-dco-foundation-amd64.tar.zst"
+          source: "zarf-package-suricata-amd64.tar.zst"
+          destination: "${{github.repository}}/${{ github.head_ref || github.ref_name }}/zarf-package-suricata-amd64.tar.zst"
