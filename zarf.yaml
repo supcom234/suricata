@@ -18,6 +18,11 @@ constants:
   - name: NODE_LABEL_VALUE
     value: "###ZARF_PKG_VAR_NODE_LABEL_VALUE###"
 
+variables:
+  - name: BRANCH
+    default: "main"
+    prompt: true
+
 components:
   - name: suricata
     description: "Suricata IDS tool"
