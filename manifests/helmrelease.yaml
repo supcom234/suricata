@@ -14,7 +14,7 @@ spec:
       chart: ./chart
       sourceRef:
         kind: GitRepository
-        name: arkime
+        name: suricata
   test:
     enable: false
   install:
