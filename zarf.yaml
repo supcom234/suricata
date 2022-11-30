@@ -1,0 +1,40 @@
+kind: ZarfPackageConfig
+metadata:
+  name: suricata
+  description: "Deploys suricata IDS in basic configuration"
+  architecture: amd64
+
+constants:
+  - name: REPOSITORY
+    value: "###ZARF_PKG_VAR_REPOSITORY###"
+  - name: TAG
+    value: "###ZARF_PKG_VAR_TAG###"
+  - name: INTERFACE
+    value: "###ZARF_PKG_VAR_INTERFACE###"
+  - name: SURICATA_LOG_PATH
+    value: "###ZARF_PKG_VAR_SURICATA_LOG_PATH###"
+  - name: NODE_LABEL
+    value: "###ZARF_PKG_VAR_NODE_LABEL###"
+  - name: NODE_LABEL_VALUE
+    value: "###ZARF_PKG_VAR_NODE_LABEL_VALUE###"
+
+variables:
+  - name: BRANCH
+    default: "main"
+    prompt: true
+
+components:
+  - name: suricata
+    description: "Suricata IDS tool"
+    required: true
+    repos:
+      - https://github.com/naps-dev/zarf-suricata-pkg.git
+    manifests:
+      - name: suricata-helm
+        namespace: suricata
+        files:
+          - manifests/namespace.yaml
+          - manifests/gitrepository.yaml
+          - manifests/helmrelease.yaml
+    images:
+      - "###ZARF_PKG_VAR_REPOSITORY###:###ZARF_PKG_VAR_TAG###"
