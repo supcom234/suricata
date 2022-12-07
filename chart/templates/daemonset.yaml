@@ -34,12 +34,18 @@ spec:
         volumeMounts:
         - name: logs
           mountPath: /var/log/suricata
-        args: ["-i", "{{ .Values.interface }}"]
+        - name: configs
+          mountPath: /etc/suricata/suricata.yaml
+          subPath: suricata.yaml
+        args: ['-c', '/etc/suricata/suricata.yaml', "-i", "{{ .Values.interface }}"]
       volumes:
       - name: logs
         hostPath:
           path: {{ .Values.suricata_log_path }}
           type: DirectoryOrCreate
+      - name: configs
+        configMap:
+          name: {{ .Release.Name }}
       affinity:
         podAntiAffinity: # Do not allow more than one per host
           requiredDuringSchedulingIgnoredDuringExecution:
