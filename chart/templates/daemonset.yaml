@@ -35,9 +35,9 @@ spec:
         - name: logs
           mountPath: /var/log/suricata
         - name: configs
-          mountPath: /etc/suricata/suricata.yaml
+          mountPath: /opt/suricata/suricata.yaml
           subPath: suricata.yaml
-        args: ['-c', '/etc/suricata/suricata.yaml', "-i", "{{ .Values.interface }}"]
+        args: ['-c', '/opt/suricata/suricata.yaml', "-i", "{{ .Values.interface }}"]
       volumes:
       - name: logs
         hostPath:
