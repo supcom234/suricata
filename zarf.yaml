@@ -14,7 +14,7 @@ variables:
     prompt: false
 
   - name: NODE_LABEL
-    default: "kubernetes.io/os: linux"
+    default: "kubernetes.io/os"
     prompt: false
 
   - name: NODE_LABEL_VALUE
