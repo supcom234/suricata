@@ -34,12 +34,19 @@ spec:
         volumeMounts:
         - name: logs
           mountPath: /var/log/suricata
-        args: ["-i", "{{ .Values.interface }}"]
+        - name: configs
+          mountPath: /opt/suricata/suricata.yaml
+          subPath: suricata.yaml
+        # args: ['-c', '/opt/suricata/suricata.yaml', "-i", "{{ .Values.interface }}"]
+        args: ["-i", "{{ .Values.interface }}", "--set", "stream.memcap=16gb"]
       volumes:
       - name: logs
         hostPath:
           path: {{ .Values.suricata_log_path }}
           type: DirectoryOrCreate
+      - name: configs
+        configMap:
+          name: {{ .Release.Name }}
       affinity:
         podAntiAffinity: # Do not allow more than one per host
           requiredDuringSchedulingIgnoredDuringExecution:

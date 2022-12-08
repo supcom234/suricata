@@ -29,10 +29,6 @@ spec:
     timeout: 30m
     cleanupOnFail: false
   values:
-    image:
-      repository: ###ZARF_CONST_REPOSITORY###
-      tag: ###ZARF_CONST_TAG###
-    interface: ###ZARF_CONST_INTERFACE###
-    suricata_log_path: ###ZARF_CONST_SURICATA_LOG_PATH###
-    node_label: ###ZARF_CONST_NODE_LABEL###
-    node_label_value: ###ZARF_CONST_NODE_LABEL_VALUE###
+    interface: ###ZARF_VAR_INTERFACE###
+    node_label: ###ZARF_VAR_NODE_LABEL###
+    node_label_value: ###ZARF_VAR_NODE_LABEL_VALUE###

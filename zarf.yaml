@@ -4,24 +4,22 @@ metadata:
   description: "Deploys suricata IDS in basic configuration"
   architecture: amd64
 
-constants:
-  - name: REPOSITORY
-    value: "###ZARF_PKG_VAR_REPOSITORY###"
-  - name: TAG
-    value: "###ZARF_PKG_VAR_TAG###"
-  - name: INTERFACE
-    value: "###ZARF_PKG_VAR_INTERFACE###"
-  - name: SURICATA_LOG_PATH
-    value: "###ZARF_PKG_VAR_SURICATA_LOG_PATH###"
-  - name: NODE_LABEL
-    value: "###ZARF_PKG_VAR_NODE_LABEL###"
-  - name: NODE_LABEL_VALUE
-    value: "###ZARF_PKG_VAR_NODE_LABEL_VALUE###"
-
 variables:
   - name: BRANCH
     default: "main"
     prompt: true
+
+  - name: INTERFACE
+    default: "eth0"
+    prompt: false
+
+  - name: NODE_LABEL
+    default: "kubernetes.io/os"
+    prompt: false
+
+  - name: NODE_LABEL_VALUE
+    default: "linux"
+    prompt: false
 
 components:
   - name: suricata
@@ -37,4 +35,4 @@ components:
           - manifests/gitrepository.yaml
           - manifests/helmrelease.yaml
     images:
-      - "###ZARF_PKG_VAR_REPOSITORY###:###ZARF_PKG_VAR_TAG###"
+      - "registry.hub.docker.com/jasonish/suricata:6.0.2"
