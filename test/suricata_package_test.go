@@ -2,11 +2,9 @@ package test
 
 import (
     "os"
-    //"strconv"
     "testing"
     "time"
     "strings"
-    //"github.com/gruntwork-io/terratest/modules/docker"
     "github.com/gruntwork-io/terratest/modules/k8s"
     "github.com/gruntwork-io/terratest/modules/shell"
     metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -14,8 +12,6 @@ import (
 
 func TestZarfPackage(t *testing.T) {
     gitBranch := os.Getenv("BRANCH_NAME")
-    // bbPackage := os.Getenv("BIGBANG_PACKAGE_PATH")
-    // testPackage := os.Getenv("TEST_PACKAGE_PATH")
     
     if (gitBranch == "") {
         gitBranch = "main"
@@ -54,7 +50,7 @@ func TestZarfPackage(t *testing.T) {
     shell.RunCommand(t, clusterTeardownCmd)
     
     // to leave cluster up for examination after this run, comment this out:
-    //defer shell.RunCommand(t, clusterTeardownCmd)
+    defer shell.RunCommand(t, clusterTeardownCmd)
 
     shell.RunCommand(t, clusterSetupCmd)
 
@@ -90,6 +86,7 @@ func TestZarfPackage(t *testing.T) {
     //Test pods come up
     opts = k8s.NewKubectlOptions("k3d-test-suricata", "/tmp/test_kubeconfig_suricata", "suricata")
     x := 0
+    pods := nil
     for x < 30 {
         time.Sleep(10*time.Second)
         pods := k8s.ListPods(t, opts, metav1.ListOptions{})
@@ -124,14 +121,4 @@ func TestZarfPackage(t *testing.T) {
     if got != true {
         t.Errorf("tail /var/log/suricata/fast.log did not contain \"Suspicious User Agent\"")
     }
-
-    //internal suricata test provided by project dev
-    //cmd := "exec -it " + pods[0].Name + " -- /bin/bash -c \"curl -A BlackSun www.google.com\""
-    //k8s.RunKubectl(t, opts, cmd)
-    //cmd2 := "exec -it " + pods[0].Name + " -- /bin/bash -c \"tail /var/log/suricata/fast.log\""
-    //log, err := k8s.RunKubectlAndGetOutputE(t, opts, cmd2)
-    //got := strings.Contains(log, "Suspicious User Agent")
-    //if got != true {
-    //   t.Errorf("tail /var/log/suricata/fast.log did not contain \"Suspicious User Agent\"")
-    //}
 }
