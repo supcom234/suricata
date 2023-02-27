@@ -88,11 +88,22 @@ func TestZarfPackage(t *testing.T) {
     shell.RunCommand(t, zarfDeploysuricataCmd)
 
     //Test pods come up
-    time.Sleep(180*time.Second)
     opts = k8s.NewKubectlOptions("k3d-test-suricata", "/tmp/test_kubeconfig_suricata", "suricata")
-    pods := k8s.ListPods(t, opts, metav1.ListOptions{})
+    x = 0
+    pods := []
+    for x < 30 {
+        time.Sleep(10*time.Second)
+        pods := k8s.ListPods(t, opts, metav1.ListOptions{})
+        if len(pods) > 0 {
+            break
+        } else if x == 29 {
+            t.Errorf("Could not start Suricata pod (Timeout)")
+        }
+        x += 1
+    }   
     k8s.WaitUntilPodAvailable(t, opts, pods[0].Name, 40, 30*time.Second)
     
+    //Test alert provided by suricata devs
     createAlert := shell.Command{
         Command: "kubectl",
         Args:    []string{"--namespace", "suricata", "exec", "-it", pods[0].Name, "--", "/bin/bash", "-c", "curl -A BlackSun www.google.com"},
