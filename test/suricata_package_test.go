@@ -94,7 +94,7 @@ func TestZarfPackage(t *testing.T) {
             t.Errorf("Could not start Suricata pod (Timeout)")
         }
         time.Sleep(10*time.Second)
-        pods := k8s.ListPods(t, opts, metav1.ListOptions{})
+        pods = k8s.ListPods(t, opts, metav1.ListOptions{})
         x += 1
     }   
     k8s.WaitUntilPodAvailable(t, opts, pods[0].Name, 40, 30*time.Second)
