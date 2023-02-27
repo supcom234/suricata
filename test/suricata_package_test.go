@@ -87,6 +87,7 @@ func TestZarfPackage(t *testing.T) {
     shell.RunCommand(t, zarfDeploysuricataCmd)
 
     // Test pods come up
+    time.Sleep(180*time.Second)
     opts = k8s.NewKubectlOptions("k3d-test-suricata", "/tmp/test_kubeconfig_suricata", "suricata")
     pods := k8s.ListPods(t, opts, metav1.ListOptions{})
     k8s.WaitUntilPodAvailable(t, opts, pods[0].Name, 40, 30*time.Second)
