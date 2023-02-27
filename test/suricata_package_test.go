@@ -90,7 +90,6 @@ func TestZarfPackage(t *testing.T) {
     //Test pods come up
     opts = k8s.NewKubectlOptions("k3d-test-suricata", "/tmp/test_kubeconfig_suricata", "suricata")
     x := 0
-    pods := []corev1.Pod
     for x < 30 {
         time.Sleep(10*time.Second)
         pods := k8s.ListPods(t, opts, metav1.ListOptions{})
