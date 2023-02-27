@@ -5,6 +5,10 @@ metadata:
   architecture: amd64
 
 variables:
+  - name: DOMAIN
+    default: "vp.bigbang.dev"
+    prompt: false
+    
   - name: BRANCH
     default: "main"
     prompt: true

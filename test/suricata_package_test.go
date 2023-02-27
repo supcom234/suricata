@@ -2,13 +2,13 @@ package test
 
 import (
     "os"
-    "strconv"
+    //"strconv"
     "testing"
     "time"
-    "github.com/gruntwork-io/terratest/modules/docker"
+    //"github.com/gruntwork-io/terratest/modules/docker"
     "github.com/gruntwork-io/terratest/modules/k8s"
     "github.com/gruntwork-io/terratest/modules/shell"
-    metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+    //metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func TestZarfPackage(t *testing.T) {
