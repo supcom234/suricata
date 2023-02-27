@@ -94,8 +94,10 @@ func TestZarfPackage(t *testing.T) {
     k8s.WaitUntilPodAvailable(t, opts, pods[0].Name, 40, 30*time.Second)
     
     //internal suricata test provided by project dev
-    k8s.RunKubectl(t, opts, []string{"exec", "-it", pods[0].Name, "--", "/bin/bash", "-c", "curl -A BlackSun www.google.com"})
-    log := k8s.RunKubectlAndGetOutputE(t, opts, []string{"exec", "-it", pods[0].Name, "--", "/bin/bash", "-c", "tail /var/log/suricata/fast.log"})
+    cmd := []string{"exec", "-it", pods[0].Name, "--", "/bin/bash", "-c", "curl -A BlackSun www.google.com"}
+    k8s.RunKubectl(t, opts, cmd)
+    cmd := []string{"exec", "-it", pods[0].Name, "--", "/bin/bash", "-c", "tail /var/log/suricata/fast.log"}
+    log := k8s.RunKubectlAndGetOutputE(t, opts, cmd)
     got := strings.Contains(log[0], "Suspicious User Agent")
     if got != true {
         t.Errorf("tail /var/log/suricata/fast.log; want true", got)
