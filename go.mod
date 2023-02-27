@@ -1,4 +1,4 @@
-module suricata
+module arkime
 
 go 1.19
 
