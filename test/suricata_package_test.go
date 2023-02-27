@@ -8,7 +8,7 @@ import (
     //"github.com/gruntwork-io/terratest/modules/docker"
     "github.com/gruntwork-io/terratest/modules/k8s"
     "github.com/gruntwork-io/terratest/modules/shell"
-    //metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+    metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func TestZarfPackage(t *testing.T) {
@@ -57,20 +57,6 @@ func TestZarfPackage(t *testing.T) {
 
     shell.RunCommand(t, clusterSetupCmd)
 
-    // Identify port being used to forward to internal HTTPS
-    // equivalent to: docker inspect k3d-test-suricata-serverlb --format '{{(index .NetworkSettings.Ports "443/tcp" 0).HostPort}}'
-    //commented out below since Suricata does not have a web server? 
-    //k3dInspect := docker.Inspect(t, "k3d-test-suricata-serverlb")
-    
-    //httpPort := k3dInspect.GetExposedHostPort (80)
-    //httpPortStr := strconv.Itoa(int(httpPort))
-    
-    //httpsPort := k3dInspect.GetExposedHostPort (443)
-    //httpsPortStr := strconv.Itoa(int(httpsPort))
-
-    //t.Log("Using HTTP Port  " + httpPortStr)
-    //t.Log("Using HTTPS Port " + httpsPortStr)
-
     zarfInitCmd := shell.Command{
         Command: "zarf",
         Args:    []string{"init", "--components", "git-server", "--confirm"},
@@ -109,10 +95,9 @@ func TestZarfPackage(t *testing.T) {
     shell.RunCommand(t, zarfDeploysuricataCmd)
 
     // commented below test out; suricata has no web page
-    //opts = k8s.NewKubectlOptions("k3d-test-xsoar", "/tmp/test_kubeconfig_xsoar", "xsoar")
-    //k8s.WaitUntilServiceAvailable(t, opts, "xsoar", 40, 30*time.Second)
-    //pods := k8s.ListPods(t, opts, metav1.ListOptions{})
-    //k8s.WaitUntilPodAvailable(t, opts, pods[0].Name, 40, 30*time.Second)
+    opts = k8s.NewKubectlOptions("k3d-test-suricata", "/tmp/test_kubeconfig_suricata", "suricata")
+    pods := k8s.ListPods(t, opts, metav1.ListOptions{})
+    k8s.WaitUntilPodAvailable(t, opts, pods[0].Name, 40, 30*time.Second)
 
     // virtual service is set up as: xsoar.vp.bigbang.dev
     // --fail-with-body used to fail on a 400 error which can happen when headers are incorrect.

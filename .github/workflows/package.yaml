@@ -86,4 +86,4 @@ jobs:
 
       - name: Publish to S3
         run: |
-          aws s3 cp --no-progress "${{ env.ZARF_PACKAGE }}" "${{ env.S3_PATH }}/${{ env.ZARF_PACKAGE }}"
+          aws s3 cp --no-progress "${{ inputs.ZARF_PACKAGE }}" "${{ env.ZARF_S3_PATH }}/${{ inputs.ZARF_PACKAGE }}"
