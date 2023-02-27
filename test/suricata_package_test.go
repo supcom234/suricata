@@ -100,6 +100,6 @@ func TestZarfPackage(t *testing.T) {
     log, err := k8s.RunKubectlAndGetOutputE(t, opts, cmd2)
     got := strings.Contains(log, "Suspicious User Agent")
     if got != true {
-        t.Errorf("tail /var/log/suricata/fast.log; want true", got)
+       t.Errorf("tail /var/log/suricata/fast.log did not contain \"Suspicious User Agent\"")
     }
 }
