@@ -107,7 +107,10 @@ func TestZarfPackage(t *testing.T) {
         Env:     testEnv,
     }
 
-    got := shell.RunCommand(t, checkAlert)
+    output := shell.RunCommandAndGetOutput(t, checkAlert)
+
+    got := strings.Contains(output, "Suspicious User Agent")
+    
     if got != true {
         t.Errorf("tail /var/log/suricata/fast.log did not contain \"Suspicious User Agent\"")
     }
