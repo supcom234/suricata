@@ -95,7 +95,7 @@ func TestZarfPackage(t *testing.T) {
     
     createAlert := shell.Command{
         Command: "kubectl",
-        Args:    []string{"exec", "-it", pods[0].Name, "--", "/bin/bash", "-c", "curl -A BlackSun www.google.com"},
+        Args:    []string{"--namespace", "suricata", "exec", "-it", pods[0].Name, "--", "/bin/bash", "-c", "curl -A BlackSun www.google.com"},
         Env:     testEnv,
     }
 
@@ -103,7 +103,7 @@ func TestZarfPackage(t *testing.T) {
 
     checkAlert := shell.Command{
         Command: "kubectl",
-        Args:    []string{"exec", "-it", pods[0].Name, "--", "/bin/bash", "-c", "tail /var/log/suricata/fast.log"},
+        Args:    []string{"--namespace", "suricata", "exec", "-it", pods[0].Name, "--", "/bin/bash", "-c", "tail /var/log/suricata/fast.log"},
         Env:     testEnv,
     }
 
