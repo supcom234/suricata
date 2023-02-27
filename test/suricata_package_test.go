@@ -53,7 +53,7 @@ func TestZarfPackage(t *testing.T) {
     shell.RunCommand(t, clusterTeardownCmd)
     
     // to leave cluster up for examination after this run, comment this out:
-    defer shell.RunCommand(t, clusterTeardownCmd)
+    //defer shell.RunCommand(t, clusterTeardownCmd)
 
     shell.RunCommand(t, clusterSetupCmd)
 
@@ -73,14 +73,6 @@ func TestZarfPackage(t *testing.T) {
 
     shell.RunCommand(t, zarfDeployDCOCmd)
 
-    createNamespace := shell.Command{
-        Command: "kubectl",
-        Args:    []string{"create", "namespace", "suricata"},
-        Env:     testEnv,
-    }
-
-    shell.RunCommand(t, createNamespace)
-
     // Wait for DCO elastic (Big Bang minimal deployment) to come up before deploying suricata
     // Note that k3d calls the cluster test-suricata, but actual context is called k3d-test-suricata
     opts := k8s.NewKubectlOptions("k3d-test-suricata", "/tmp/test_kubeconfig_suricata", "dataplane-ek");
@@ -94,7 +86,7 @@ func TestZarfPackage(t *testing.T) {
 
     shell.RunCommand(t, zarfDeploysuricataCmd)
 
-    // commented below test out; suricata has no web page
+    // Test pods come up
     opts = k8s.NewKubectlOptions("k3d-test-suricata", "/tmp/test_kubeconfig_suricata", "suricata")
     pods := k8s.ListPods(t, opts, metav1.ListOptions{})
     k8s.WaitUntilPodAvailable(t, opts, pods[0].Name, 40, 30*time.Second)
