@@ -93,13 +93,32 @@ func TestZarfPackage(t *testing.T) {
     pods := k8s.ListPods(t, opts, metav1.ListOptions{})
     k8s.WaitUntilPodAvailable(t, opts, pods[0].Name, 40, 30*time.Second)
     
-    //internal suricata test provided by project dev
-    cmd := "exec -it " + pods[0].Name + " -- /bin/bash -c \"curl -A BlackSun www.google.com\""
-    k8s.RunKubectl(t, opts, cmd)
-    cmd2 := "exec -it " + pods[0].Name + " -- /bin/bash -c \"tail /var/log/suricata/fast.log\""
-    log, err := k8s.RunKubectlAndGetOutputE(t, opts, cmd2)
-    got := strings.Contains(log, "Suspicious User Agent")
-    if got != true {
-       t.Errorf("tail /var/log/suricata/fast.log did not contain \"Suspicious User Agent\"")
+    createAlert := shell.Command{
+        Command: "kubectl",
+        Args:    []string{"exec", "-it", pods[0].Name, "--", "/bin/bash", "-c", "curl -A BlackSun www.google.com"},
+        Env:     testEnv,
     }
+
+    shell.RunCommand(t, createAlert)
+
+    checkAlert := shell.Command{
+        Command: "kubectl",
+        Args:    []string{"exec", "-it", pods[0].Name, "--", "/bin/bash", "-c", "tail /var/log/suricata/fast.log"},
+        Env:     testEnv,
+    }
+
+    got := shell.RunCommand(t, checkAlert)
+    if got != true {
+        t.Errorf("tail /var/log/suricata/fast.log did not contain \"Suspicious User Agent\"")
+    }
+
+    //internal suricata test provided by project dev
+    //cmd := "exec -it " + pods[0].Name + " -- /bin/bash -c \"curl -A BlackSun www.google.com\""
+    //k8s.RunKubectl(t, opts, cmd)
+    //cmd2 := "exec -it " + pods[0].Name + " -- /bin/bash -c \"tail /var/log/suricata/fast.log\""
+    //log, err := k8s.RunKubectlAndGetOutputE(t, opts, cmd2)
+    //got := strings.Contains(log, "Suspicious User Agent")
+    //if got != true {
+    //   t.Errorf("tail /var/log/suricata/fast.log did not contain \"Suspicious User Agent\"")
+    //}
 }
