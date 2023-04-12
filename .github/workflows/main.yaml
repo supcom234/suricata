@@ -12,7 +12,8 @@ permissions:
   contents: read
 
 env:
-  BRANCH_NAME: "${{ github.head_ref || github.ref_name }}"
+  REF_NAME: "${{ github.head_ref || github.ref_name }}"
+  REF_TYPE: "${{ github.ref_type }}"
   ZARF_PACKAGE: zarf-package-suricata-amd64.tar.zst
   BB_MIN_PACKAGE: zarf-package-dco-foundation-minimal-amd64.tar.zst
 
@@ -21,7 +22,8 @@ jobs:
   propagate-env:
     runs-on: ubuntu-22.04
     outputs:
-      BRANCH_NAME: ${{ env.BRANCH_NAME }}
+      REF_NAME: ${{ env.REF_NAME }}
+      REF_TYPE: ${{ env.REF_TYPE }}
       ZARF_PACKAGE: ${{ env.ZARF_PACKAGE }}
       BB_MIN_PACKAGE: ${{ env.BB_MIN_PACKAGE }}
     steps:
@@ -32,6 +34,7 @@ jobs:
     uses: ./.github/workflows/package.yaml
     secrets: inherit
     with:
-      BRANCH_NAME: ${{ needs.propagate-env.outputs.BRANCH_NAME }}
+      REF_NAME: ${{ needs.propagate-env.outputs.REF_NAME }}
+      REF_TYPE: ${{ needs.propagate-env.outputs.REF_TYPE }}
       ZARF_PACKAGE: ${{ needs.propagate-env.outputs.ZARF_PACKAGE }}
       BB_MIN_PACKAGE: ${{ needs.propagate-env.outputs.BB_MIN_PACKAGE }}
