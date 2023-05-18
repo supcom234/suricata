@@ -4,7 +4,7 @@ replicaCount: 1
 image:
   repository: registry.hub.docker.com/jasonish/suricata
   pullPolicy: IfNotPresent
-  tag: 7.0
+  tag: "7.0"
 
 interface: eth0
 
