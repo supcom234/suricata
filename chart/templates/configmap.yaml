@@ -17,3 +17,11 @@ data:
         toserver-chunk-size: 2560
         toclient-chunk-size: 2560
         randomize-chunk-size: yes
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-logrotate
+data:
+  suricata: {{ .Values.logrotate_settings }}
