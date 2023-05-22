@@ -14,3 +14,15 @@ suricata_log_path: /opt/suricata
 # Specify the node label for determining where to run Suricata
 node_label: "kubernetes.io/os"
 node_label_value: "linux"
+
+logrotate_settings: |
+  /var/log/suricata/*.log /var/log/suricata/*.json {
+    daily
+    missingok
+    rotate 3
+    nocompress
+    sharedscripts
+    postrotate
+        suricatasc -c reopen-log-files
+    endscript
+  }
