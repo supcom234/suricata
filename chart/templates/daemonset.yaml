@@ -57,8 +57,6 @@ spec:
       - name: logrotate-configs
         configMap:
           name: {{ .Release.Name }}-logrotate
-          items:
-            - key: suricata
       affinity:
         podAntiAffinity: # Do not allow more than one per host
           requiredDuringSchedulingIgnoredDuringExecution:
