@@ -24,14 +24,4 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-logrotate
 data:
-  suricata: |
-    /var/log/suricata/*.log /var/log/suricata/*.json {
-      daily
-      missingok
-      rotate 10
-      nocompress
-      sharedscripts
-      postrotate
-          suricatasc -c reopen-log-files
-      endscript
-    }
+  suricata: {{ .Values.logrotate_config.suricata }}
