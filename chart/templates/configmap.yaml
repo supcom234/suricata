@@ -18,11 +18,11 @@ data:
         toclient-chunk-size: 2560
         randomize-chunk-size: yes
 
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ .Release.Name }}-logrotate
-data:
-  suricata: "test"
+# ---
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: {{ .Release.Name }}-logrotate
+# data:
+#   suricata: "test"
   # suricata: {{ .Values.logrotate_settings }}
