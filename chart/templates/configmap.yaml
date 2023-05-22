@@ -24,4 +24,5 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-logrotate
 data:
-  suricata: {{ .Values.logrotate_settings }}
+  suricata: "test"
+  # suricata: {{ .Values.logrotate_settings }}
