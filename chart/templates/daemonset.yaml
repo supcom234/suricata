@@ -39,10 +39,11 @@ spec:
           subPath: suricata.yaml
         # args: ['-c', '/opt/suricata/suricata.yaml', "-i", "{{ .Values.interface }}"]
         args: ["-i", "{{ .Values.interface }}", "--set", "stream.memcap=16gb"]
-        # lifecycle:
-        #   postStart:
-        #     exec:
-        #       command: ["logrotate", "-vf", "/etc/logrotate.d/suricata"]
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/sh", "-c"]
+              args: ["sleep 30; logrotate -vf /etc/logrotate.d/suricata"]
       volumes:
       - name: logs
         hostPath:
