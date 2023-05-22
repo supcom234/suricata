@@ -17,3 +17,21 @@ data:
         toserver-chunk-size: 2560
         toclient-chunk-size: 2560
         randomize-chunk-size: yes
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-logrotate
+data:
+  suricata: |
+    /var/log/suricata/*.log /var/log/suricata/*.json {
+      daily
+      missingok
+      rotate 10
+      nocompress
+      sharedscripts
+      postrotate
+          suricatasc -c reopen-log-files
+      endscript
+    }
