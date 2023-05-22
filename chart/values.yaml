@@ -20,7 +20,7 @@ logrotate_config:
     /var/log/suricata/*.log /var/log/suricata/*.json {
       daily
       missingok
-      rotate 10
+      rotate 3
       nocompress
       sharedscripts
       postrotate
