@@ -42,8 +42,7 @@ spec:
         lifecycle:
           postStart:
             exec:
-              command: ["/bin/sh", "-c"]
-              args: ["sleep 30; logrotate -vf /etc/logrotate.d/suricata"]
+              command: ["/bin/sh", "-c", "sleep 30; logrotate -vf /etc/logrotate.d/suricata"]
       volumes:
       - name: logs
         hostPath:
