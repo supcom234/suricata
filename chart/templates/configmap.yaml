@@ -4,7 +4,6 @@ metadata:
   name: {{ .Release.Name }}
 data:
   suricata.yaml:  |
-
     %YAML 1.1
     ---
     stream:
@@ -17,3 +16,11 @@ data:
         toserver-chunk-size: 2560
         toclient-chunk-size: 2560
         randomize-chunk-size: yes
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-logrotate
+data:
+  suricata: {{ toYaml .Values.logrotate_config.suricata | indent 2 }}

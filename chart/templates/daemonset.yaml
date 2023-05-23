@@ -37,12 +37,15 @@ spec:
         - name: configs
           mountPath: /opt/suricata/suricata.yaml
           subPath: suricata.yaml
+        - name: logrotate-configs
+          mountPath: /etc/logrotate.d/suricata
+          subPath: suricata
         # args: ['-c', '/opt/suricata/suricata.yaml', "-i", "{{ .Values.interface }}"]
         args: ["-i", "{{ .Values.interface }}", "--set", "stream.memcap=16gb"]
         lifecycle:
           postStart:
             exec:
-              command: ["logrotate", "-vf", "/etc/logrotate.d/suricata"]
+              command: ["/bin/sh", "-c", "sleep 30; logrotate -vf /etc/logrotate.d/suricata"]
       volumes:
       - name: logs
         hostPath:
@@ -51,6 +54,9 @@ spec:
       - name: configs
         configMap:
           name: {{ .Release.Name }}
+      - name: logrotate-configs
+        configMap:
+          name: {{ .Release.Name }}-logrotate
       affinity:
         podAntiAffinity: # Do not allow more than one per host
           requiredDuringSchedulingIgnoredDuringExecution:
