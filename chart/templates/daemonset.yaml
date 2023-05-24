@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: {{ .Release.Name }}
+  namespace: {{ .Values.namespace }}
   labels:
     component: suricata
 spec:
@@ -25,6 +26,10 @@ spec:
       - name: suricata
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        # command:
+        # - "/bin/bash"
+        # - "-c"
+        # - "sleep 500000"
         securityContext:
           capabilities: # Required to allow Suricata to function
             add:
@@ -32,31 +37,45 @@ spec:
               - NET_RAW
               - SYS_NICE
         volumeMounts:
+        - name: pcaps
+          mountPath: /nsm_pcaps
+          readOnly: false
+        - name: rules
+          mountPath: /var/lib/suricata/rules
+          readOnly: false
         - name: logs
           mountPath: /var/log/suricata
+          readOnly: false
         - name: configs
-          mountPath: /opt/suricata/suricata.yaml
+          mountPath: /etc/suricata/suricata.yaml
           subPath: suricata.yaml
         - name: logrotate-configs
           mountPath: /etc/logrotate.d/suricata
           subPath: suricata
-        # args: ['-c', '/opt/suricata/suricata.yaml', "-i", "{{ .Values.interface }}"]
         args: ["-i", "{{ .Values.interface }}", "--set", "stream.memcap=16gb"]
         lifecycle:
           postStart:
             exec:
               command: ["/bin/sh", "-c", "sleep 30; logrotate -vf /etc/logrotate.d/suricata"]
       volumes:
+      - name: rules
+        hostPath: 
+          path: {{ .Values.suricata_rules_path }}
+          type: DirectoryOrCreate
       - name: logs
         hostPath:
           path: {{ .Values.suricata_log_path }}
+          type: DirectoryOrCreate
+      - name: pcaps
+        hostPath:
+          path: {{ .Values.suricata_pcap_path }}
           type: DirectoryOrCreate
       - name: configs
         configMap:
           name: {{ .Release.Name }}
       - name: logrotate-configs
         configMap:
-          name: {{ .Release.Name }}-logrotate
+          name: {{ .Release.Name }}-logrotate      
       affinity:
         podAntiAffinity: # Do not allow more than one per host
           requiredDuringSchedulingIgnoredDuringExecution:

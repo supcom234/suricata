@@ -1,15 +1,24 @@
 # Default values for suricata.
 replicaCount: 1
+namespace: suricata
 
 image:
-  repository: registry.hub.docker.com/jasonish/suricata
+  repository: devnexus.ultraman.cnaps.io:8443/suricata
   pullPolicy: IfNotPresent
-  tag: "7.0"
+  # pullPolicy: Always
+  tag: 7.0.0-rc1
 
-interface: eth0
+interface: ens160
+elastic_user: elastic
+elastic_pass: dataplane-ek-es-elastic-user
+elastic_cert: dataplane-ek-kb-es-ca
+elastic_ca: ca.crt
+suricata_policy_id: suricata-internal-sensor
 
 # Host path for suricata log volume
-suricata_log_path: /opt/suricata
+suricata_log_path: /opt/suricata/logs
+suricata_pcap_path: /opt/suricata/pcaps
+suricata_rules_path: /opt/suricata/rules
 
 # Specify the node label for determining where to run Suricata
 node_label: "kubernetes.io/os"
@@ -17,7 +26,7 @@ node_label_value: "linux"
 
 logrotate_config:
   suricata: |
-    /var/log/suricata/*.log /var/log/suricata/*.json {
+    /var/log/suricata/*.log /var/log/suricata/eve-alerts.json {
       daily
       missingok
       rotate 3

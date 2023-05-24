@@ -1,0 +1,228 @@
+# For more information refer https://www.elastic.co/guide/en/fleet/current/running-on-kubernetes-standalone.html
+{{- $elastic_secret := (lookup "v1" "Secret" "dataplane-ek" .Values.elastic_pass).data }}
+{{- $elastic_password := get $elastic_secret .Values.elastic_user | b64dec }}
+{{- $elastic_secret2 := (lookup "v1" "Secret" "dataplane-ek" .Values.elastic_cert).data }}
+{{- $elastic_ca := get $elastic_secret2 .Values.elastic_ca }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: elastic-agent-standalone
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: elastic-agent-standalone
+spec:
+  selector:
+    matchLabels:
+      app: elastic-agent-standalone
+  template:
+    metadata:
+      labels:
+        app: elastic-agent-standalone
+    spec:
+      # Tolerations are needed to run Elastic Agent on Kubernetes control-plane nodes.
+      # Agents running on control-plane nodes collect metrics from the control plane components (scheduler, controller manager) of Kubernetes
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          effect: NoSchedule
+        - key: node-role.kubernetes.io/master
+          effect: NoSchedule
+      serviceAccountName: elastic-agent-standalone
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+        - name: elastic-agent-standalone
+          image: docker.elastic.co/beats/elastic-agent:8.6.0
+          # command:
+          # - "/bin/bash"
+          # - "-c"
+          # - "sleep 500000"
+          command:
+          - "/bin/bash"
+          - "-c"
+          - |
+            echo $ES_CERT | base64 --decode > /usr/local/share/ca-certificates/ca.crt 
+            update-ca-certificates 
+            curl -u "$ES_USERNAME:$ES_PASSWORD" -o agent.yml https://dataplane-kibana.vp.bigbang.dev/api/fleet/agent_policies/{{ .Values.suricata_policy_id }}/download?standalone=true
+            /usr/share/elastic-agent/elastic-agent -c /usr/share/elastic-agent/agent.yml -e
+          env:
+            - name: ES_USERNAME
+              value: "{{ .Values.elastic_user }}"
+            - name: ES_PASSWORD
+              value: "{{ $elastic_password }}"
+            - name: ES_CERT
+              value: "{{ $elastic_ca }}"
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: STATE_PATH
+              value: "/etc/elastic-agent"
+          securityContext:
+            runAsUser: 0
+          resources:
+            limits:
+              memory: 700Mi
+            requests:
+              cpu: 100m
+              memory: 400Mi
+          volumeMounts:            
+            - name: varlog
+              mountPath: /var/log
+              readOnly: true            
+      volumes:                
+        - name: varlog
+          hostPath:
+            path: /opt/suricata/logs
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: elastic-agent-standalone
+subjects:
+  - kind: ServiceAccount
+    name: elastic-agent-standalone
+    namespace: {{ .Values.namespace }}
+roleRef:
+  kind: ClusterRole
+  name: elastic-agent-standalone
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: {{ .Values.namespace }}
+  name: elastic-agent-standalone
+subjects:
+  - kind: ServiceAccount
+    name: elastic-agent-standalone
+    namespace: {{ .Values.namespace }}
+roleRef:
+  kind: Role
+  name: elastic-agent-standalone
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: elastic-agent-standalone-kubeadm-config
+  namespace: {{ .Values.namespace }}
+subjects:
+  - kind: ServiceAccount
+    name: elastic-agent-standalone
+    namespace: {{ .Values.namespace }}
+roleRef:
+  kind: Role
+  name: elastic-agent-standalone-kubeadm-config
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: elastic-agent-standalone
+  labels:
+    k8s-app: elastic-agent-standalone
+rules:
+  - apiGroups: [""]
+    resources:
+      - nodes
+      - namespaces
+      - events
+      - pods
+      - services
+      - configmaps
+      # Needed for cloudbeat
+      - serviceaccounts
+      - persistentvolumes
+      - persistentvolumeclaims
+    verbs: ["get", "list", "watch"]
+  # Enable this rule only if planing to use kubernetes_secrets provider
+  #- apiGroups: [""]
+  #  resources:
+  #  - secrets
+  #  verbs: ["get"]
+  - apiGroups: ["extensions"]
+    resources:
+      - replicasets
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources:
+      - statefulsets
+      - deployments
+      - replicasets
+      - daemonsets
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["batch"]
+    resources:
+      - jobs
+      - cronjobs
+    verbs: ["get", "list", "watch"]
+  - apiGroups:
+      - ""
+    resources:
+      - nodes/stats
+    verbs:
+      - get
+  # Needed for apiserver
+  - nonResourceURLs:
+      - "/metrics"
+    verbs:
+      - get
+  # Needed for cloudbeat
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources:
+      - clusterrolebindings
+      - clusterroles
+      - rolebindings
+      - roles
+    verbs: ["get", "list", "watch"]
+  # Needed for cloudbeat
+  - apiGroups: ["policy"]
+    resources:
+      - podsecuritypolicies
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [ "storage.k8s.io" ]
+    resources:
+      - storageclasses
+    verbs: [ "get", "list", "watch" ]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: elastic-agent-standalone
+  # Should be the namespace where elastic-agent is running
+  namespace: {{ .Values.namespace }}
+  labels:
+    k8s-app: elastic-agent-standalone
+rules:
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    verbs: ["get", "create", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: elastic-agent-standalone-kubeadm-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    k8s-app: elastic-agent-standalone
+rules:
+  - apiGroups: [""]
+    resources:
+      - configmaps
+    resourceNames:
+      - kubeadm-config
+    verbs: ["get"]
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: elastic-agent-standalone
+  namespace: {{ .Values.namespace }}
+  labels:
+    k8s-app: elastic-agent-standalone
