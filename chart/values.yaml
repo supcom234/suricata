@@ -27,3 +27,9 @@ logrotate_config:
           suricatasc -c reopen-log-files
       endscript
     }
+
+tolerations:
+  - key: "cnaps.io/node-taint"
+    operator: "Equal"
+    value: "noncore"
+    effect: "NoSchedule"

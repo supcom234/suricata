@@ -20,6 +20,9 @@ spec:
       - key: node-role.kubernetes.io/master
         operator: Exists
         effect: NoSchedule
+      {{- with .Values.tolerations }}
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
       hostNetwork: true
       containers:
       - name: suricata
