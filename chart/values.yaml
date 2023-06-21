@@ -28,6 +28,14 @@ logrotate_config:
       endscript
     }
 
+nodeSelector:
+  matchExpressions:
+    - key: "cnaps.io/node-type"
+      operator: In
+      values:
+        - Tier-1
+        - Tier-2
+
 tolerations:
   - key: "cnaps.io/node-taint"
     operator: "Equal"
