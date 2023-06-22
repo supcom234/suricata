@@ -12,12 +12,7 @@ spec:
     metadata:
       labels:
         component: suricata
-    spec:
-      nodeSelector:
-        {{- with .Values.nodeSelector.matchExpressions }}
-        matchExpressions:
-        {{- toYaml . | nindent 10 }}
-      {{- end }}
+    spec:        
       tolerations:
       - key: node-role.kubernetes.io/control-plane
         operator: Exists
@@ -83,3 +78,6 @@ spec:
                 operator: In
                 values:
                   - {{ .Values.node_label_value }}
+              {{- with .Values.nodeSelector.matchExpressions }}
+              {{- toYaml . | nindent 14 }}
+              {{- end }}
