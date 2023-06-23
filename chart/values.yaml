@@ -35,7 +35,6 @@ nodeSelector:
       values:
         - Tier-1
         - Tier-2
-        - Tier-3
 
 tolerations:
   - key: "cnaps.io/node-taint"
