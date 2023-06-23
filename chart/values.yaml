@@ -11,10 +11,6 @@ interface: eth0
 # Host path for suricata log volume
 suricata_log_path: /opt/suricata
 
-# Specify the node label for determining where to run Suricata
-node_label: "kubernetes.io/os"
-node_label_value: "linux"
-
 logrotate_config:
   suricata: |
     /var/log/suricata/*.log /var/log/suricata/*.json {
@@ -27,17 +23,4 @@ logrotate_config:
           suricatasc -c reopen-log-files
       endscript
     }
-
-nodeSelector:
-  matchExpressions:
-    - key: "cnaps.io/node-type"
-      operator: In
-      values:
-        - Tier-1
-        - Tier-2
-
-tolerations:
-  - key: "cnaps.io/node-taint"
-    operator: "Equal"
-    value: "noncore"
-    effect: "NoSchedule"
+      

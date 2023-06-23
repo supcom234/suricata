@@ -12,7 +12,9 @@ spec:
     metadata:
       labels:
         component: suricata
-    spec:        
+    spec:
+      nodeSelector:
+        suricata-capture: "true"
       tolerations:
       - key: node-role.kubernetes.io/control-plane
         operator: Exists
@@ -20,9 +22,10 @@ spec:
       - key: node-role.kubernetes.io/master
         operator: Exists
         effect: NoSchedule
-      {{- with .Values.tolerations }}
-        {{- toYaml . | nindent 6 }}
-      {{- end }}
+      - key: "cnaps.io/node-taint"
+        operator: "Equal"
+        value: "noncore"
+        effect: "NoSchedule"
       hostNetwork: true
       containers:
       - name: suricata
@@ -60,24 +63,3 @@ spec:
       - name: logrotate-configs
         configMap:
           name: {{ .Release.Name }}-logrotate
-      affinity:
-        podAntiAffinity: # Do not allow more than one per host
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: component
-                operator: In
-                values:
-                - suricata
-            topologyKey: "kubernetes.io/hostname"
-        nodeAffinity: # Specify a specific target node
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: {{ .Values.node_label }}
-                operator: In
-                values:
-                  - {{ .Values.node_label_value }}
-              {{- with .Values.nodeSelector.matchExpressions }}
-              {{- toYaml . | nindent 14 }}
-              {{- end }}
