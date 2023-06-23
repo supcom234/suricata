@@ -23,4 +23,3 @@ logrotate_config:
           suricatasc -c reopen-log-files
       endscript
     }
-      
