@@ -11,10 +11,6 @@ interface: eth0
 # Host path for suricata log volume
 suricata_log_path: /opt/suricata
 
-# Specify the node label for determining where to run Suricata
-node_label: "kubernetes.io/os"
-node_label_value: "linux"
-
 logrotate_config:
   suricata: |
     /var/log/suricata/*.log /var/log/suricata/*.json {
