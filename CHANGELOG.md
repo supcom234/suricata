@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Upped lifecycle posthook command sleep time from 30 sec to 60 sec.
 
 ## [v7.0.0-1]
 ### Added
