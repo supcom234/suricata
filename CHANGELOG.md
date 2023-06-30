@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+## [v7.0.0-2]
+### Updated
+- Upped lifecycle posthook command sleep time from 30 sec to 60 sec.
+
 ## [v7.0.0-1]
 ### Added
 - Added toleration for taint `cnaps.io/node-taint=noncore:NoSchedule` for noncore hardware
