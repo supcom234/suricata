@@ -14,7 +14,7 @@ spec:
         component: suricata
     spec:
       nodeSelector:
-        suricata-capture: "true"
+        cnaps.io/suricata-capture: "true"
       tolerations:
       - key: node-role.kubernetes.io/control-plane
         operator: Exists
