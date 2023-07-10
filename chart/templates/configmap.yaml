@@ -6,17 +6,19 @@ data:
   suricata.yaml:  |
     %YAML 1.1
     ---
-    stream:
-      memcap: 16gb
-      checksum-validation: no      # reject wrong csums
-      inline: auto                  # auto will use inline mode in IPS mode, yes or no set it statically
-      reassembly:
-        memcap: 16gb
-        depth: 1mb                  # reassemble 1mb into a stream
-        toserver-chunk-size: 2560
-        toclient-chunk-size: 2560
-        randomize-chunk-size: yes
-
+{{ toYaml .Values.suricata_config | indent 4}}
+    default-rule-path: /usr/local/etc/suricata/rules
+    rule-files:
+{{ required "Must specify rule_files" .Values.rule_files | keys | toYaml | indent 6}}
+{{- range $rule_file_name, $rules := .Values.rule_files }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $.Release.Name }}-rules-{{ $rule_file_name }}
+data:
+  {{ $rule_file_name }}: {{ quote $rules }}
+{{- end }}
 ---
 apiVersion: v1
 kind: ConfigMap

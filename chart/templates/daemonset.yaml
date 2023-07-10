@@ -46,6 +46,11 @@ spec:
         - name: logrotate-configs
           mountPath: /etc/logrotate.d/suricata
           subPath: suricata
+{{- range $rule_file_name, $rules := .Values.rule_files }}
+        - name: rules-{{ $rule_file_name }}
+          mountPath: /usr/local/etc/suricata/rules
+          subPath: {{ $rule_file_name }}
+{{- end }}
         # args: ['-c', '/opt/suricata/suricata.yaml', "-i", "{{ .Values.interface }}"]
         args: ["-i", "{{ .Values.interface }}", "--set", "stream.memcap=16gb"]
         lifecycle:
@@ -63,3 +68,8 @@ spec:
       - name: logrotate-configs
         configMap:
           name: {{ .Release.Name }}-logrotate
+{{- range $rule_file_name, $rules := .Values.rule_files }}
+      - name: rules-{{ $rule_file_name }}
+        configMap:
+          name: {{ $.Release.Name }}-rules-{{ $rule_file_name }}
+{{- end }}

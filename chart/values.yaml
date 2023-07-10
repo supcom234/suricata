@@ -23,3 +23,23 @@ logrotate_config:
           suricatasc -c reopen-log-files
       endscript
     }
+
+suricata_config:
+  stream:
+    memcap: 16gb
+    checksum-validation: no       # reject wrong csums
+    inline: auto                  # auto will use inline mode in IPS mode, yes or no set it statically
+    reassembly:
+      memcap: 16gb
+      depth: 1mb                  # reassemble 1mb into a stream
+      toserver-chunk-size: 2560
+      toclient-chunk-size: 2560
+      randomize-chunk-size: yes
+
+rule_files:
+  rule1: |
+    alert http any any -> any any (msg:"HTTP to duckduckgo.com"; content:"Host: duckduckgo.com"; sid:100001; rev:1;)
+
+  rule2: |
+    alert http any any -> any any (msg:"HTTP to example.com"; content:"Host: example.com"; sid:100001; rev:1;)
+
