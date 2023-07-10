@@ -3,15 +3,15 @@
 ## Contribution Guide
 To contribute to this project, please follow the steps below:
 1. Ensure there is an issue that clearly describes the purpose and scope of your contribution.
-1. Create a new branch, named to clearly reflect the issue it corresponds to.
-    * This is trivial using the [Development side bar on the issue page](https://docs.github.com/en/issues/tracking-your-work-with-issues/creating-a-branch-for-an-issue).
+1. Create a new branch named to reflect the corresponding issue.
+    * Best practice is to click _Create a branch_ link in the [issue's development side bar](https://docs.github.com/en/issues/tracking-your-work-with-issues/creating-a-branch-for-an-issue), and use the suggested branch name.
+1. Configure your `git` client for [Signing Commits](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits)
 1. Make and commit your code changes to the new branch.
 1. Once all of your changes have been made, checkout the [dco-core repository](https://github.com/naps-dev/dco-core)
-1. Create the same new branch in the [dco-core repository](https://github.com/naps-dev/dco-core).
-    * This is trivial using the [Development side bar on the issue page](https://docs.github.com/en/issues/tracking-your-work-with-issues/creating-a-branch-for-an-issue).
-1. Update the GitHub workflow yaml file corresponding to this repo (e.g. `suricata.yaml`) on your new branch in [dco-core's .github/workflows folder](https://github.com/naps-dev/dco-core/tree/main/.github/workflows) so:
-    * `REF_NAME` variable matches the name of issue branch created earlier.
-    * `REF_TYPE` variable to "branch".
+1. Create a new branch in the [dco-core repository](https://github.com/naps-dev/dco-core) with the same name as the branch created in component repo.
+1. Update variables in the GitHub workflow yaml file corresponding to this repo (e.g. `suricata.yaml`) on your new branch in [dco-core's .github/workflows folder](https://github.com/naps-dev/dco-core/tree/main/.github/workflows) so:
+    * `REF_NAME: <issue-specific branch created in this repo>`
+    * `REF_TYPE: "branch"`
 1. Commit and push your changes to `dco-core` to trigger a test.
 1. Find `<your_github_username> is building the Suricata package` in the list of actions on the [dco-core actions page](https://github.com/naps-dev/dco-core/actions)
 1. If the action fails, you will need to check the outputs, fix any changes, and re-trigger the action.
