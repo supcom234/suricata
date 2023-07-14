@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: {{ .Release.Name }}
+  namespace: {{ .Values.namespace }}
   labels:
     component: suricata
 spec:
@@ -38,6 +39,9 @@ spec:
               - NET_RAW
               - SYS_NICE
         volumeMounts:
+	- name: pcaps
+          mountPath: /nsm_pcaps
+          readOnly: false
         - name: logs
           mountPath: /var/log/suricata
         - name: configs
@@ -61,6 +65,10 @@ spec:
       - name: logs
         hostPath:
           path: {{ .Values.suricata_log_path }}
+          type: DirectoryOrCreate
+      - name: pcaps
+        hostPath:
+          path: {{ .Values.suricata_pcap_path }}
           type: DirectoryOrCreate
       - name: configs
         configMap:

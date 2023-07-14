@@ -1,5 +1,6 @@
 # Default values for suricata.
 replicaCount: 1
+namespace: suricata
 
 image:
   repository: registry.hub.docker.com/jasonish/suricata
@@ -10,10 +11,11 @@ capture_interface: capture0
 
 # Host path for suricata log volume
 suricata_log_path: /opt/suricata
+suricata_pcap_path: /opt/suricata/pcaps
 
 logrotate_config:
   suricata: |
-    /var/log/suricata/*.log /var/log/suricata/*.json {
+    /var/log/suricata/*.log /var/log/suricata/eve-alerts.json {
       daily
       missingok
       rotate 3
@@ -23,18 +25,6 @@ logrotate_config:
           suricatasc -c reopen-log-files
       endscript
     }
-
-suricata_config:
-  stream:
-    memcap: 16gb
-    checksum-validation: no       # reject wrong csums
-    inline: auto                  # auto will use inline mode in IPS mode, yes or no set it statically
-    reassembly:
-      memcap: 16gb
-      depth: 1mb                  # reassemble 1mb into a stream
-      toserver-chunk-size: 2560
-      toclient-chunk-size: 2560
-      randomize-chunk-size: yes
 
 rule_files:
   rule1: |

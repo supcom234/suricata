@@ -4,9 +4,7 @@ metadata:
   name: {{ .Release.Name }}
 data:
   suricata.yaml:  |
-    %YAML 1.1
-    ---
-{{ toYaml .Values.suricata_config | indent 4}}
+{{ .Files.Get "files/suricata_config.yaml" | indent 4 }}
     default-rule-path: /usr/local/etc/suricata/rules
     rule-files:
 {{ required "Must specify rule_files" .Values.rule_files | keys | toYaml | indent 6}}
